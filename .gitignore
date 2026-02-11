@@ -1,0 +1,30 @@
+# Build artifacts
+build/
+bin/
+result
+*
+!*/
+!.gitignore
+!.envrc
+!*.nix
+!*.lock
+!*.md
+!*.cpp
+!*.hpp
+!CMakeLists.txt
+!CMakePresets.json
+!config.toml
+!.agent/
+
+# Nix/Direnv
+.direnv/
+.devenv/
+.devenv.flake.nix
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*~
+compile_commands.json
+.cache/
