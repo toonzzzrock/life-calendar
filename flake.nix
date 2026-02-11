@@ -34,9 +34,10 @@
               cmake
               pkg-config
               makeWrapper
+              git
             ];
 
-            buildInputs = with pkgs; [ ];
+            buildInputs = with pkgs; [ ftxui ];
 
             cmakeFlags = [
               "-DCMAKE_BUILD_TYPE=Release"
