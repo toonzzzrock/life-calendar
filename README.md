@@ -59,6 +59,25 @@ Template placeholders (used only when creating a new file):
 - `{month}` -> month as number
 - `{day}` -> day as number
 
+## CLI Arguments
+
+The application supports several arguments for automation (e.g., for use in startup scripts or status bars):
+
+| Argument                      | Description                                               |
+| ----------------------------- | --------------------------------------------------------- |
+| `-h`, `--help`                | Show the help message and exit                            |
+| `--check-today`               | Print `true`/`false` if today's diary exists and exit     |
+| `--check-yesterday`           | Print `true`/`false` if yesterday's diary exists and exit |
+| `--open-if-today-missing`     | Open the TUI only if today's diary is missing             |
+| `--open-if-yesterday-missing` | Open the TUI only if yesterday's diary is missing         |
+
+Example:
+
+```bash
+# Only open the calendar if I haven't written anything today
+life-calendar --open-if-today-missing
+```
+
 ## Keybindings
 
 | Key                    | Action                                    |
@@ -71,14 +90,37 @@ Template placeholders (used only when creating a new file):
 
 ## NixOS Integration
 
-Add to your system flake:
+To use the NixOS module and avoid system bloat by sharing `nixpkgs`, add this to your system flake:
 
 ```nix
 {
-  inputs.life-calendar.url = "path:/home/you/life-calendar";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    life-calendar = {
+      url = "github:your-username/life-calendar";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.systems.follows = "systems";
+    };
+  };
 
-  # In your configuration.nix
-  environment.systemPackages = [ inputs.life-calendar.packages.${system}.default ];
+  outputs = { self, nixpkgs, life-calendar, ... }: {
+    nixosConfigurations.your-hostname = nixpkgs.lib.nixosSystem {
+      modules = [
+        # ... your other modules
+        life-calendar.nixosModules.default
+        {
+          programs.life-calendar = {
+            enable = true;
+            birthDate = "1990-01-01";
+            deathDate = "2070-01-01";
+            editor = "code"; # default is "code"
+            diaryDir = "~/Documents/life";
+            diaryTemplate = "~/Documents/life/template.md";
+          };
+        }
+      ];
+    };
+  };
 }
 ```
 

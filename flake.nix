@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    devenv.url = "github:cachix/devenv";
     systems.url = "github:nix-systems/default";
   };
 
@@ -11,7 +10,6 @@
     {
       self,
       nixpkgs,
-      devenv,
       systems,
       ...
     }@inputs:
@@ -84,7 +82,7 @@
             };
             editor = lib.mkOption {
               type = lib.types.str;
-              default = "nvim";
+              default = "code";
               description = "The editor to use for diary entries.";
             };
             diaryDir = lib.mkOption {
@@ -110,7 +108,7 @@
                     --set LIFE_CALENDAR_BIRTH_DATE "${cfg.birthDate}" \
                     --set LIFE_CALENDAR_DEATH_DATE "${cfg.deathDate}" \
                     --set LIFE_CALENDAR_EDITOR "${cfg.editor}" \
-                    --set LIFE_CALENDAR_DIARY_DIR "${cfg.diary_dir}" \
+                    --set LIFE_CALENDAR_DIARY_DIR "${cfg.diaryDir}" \
                     --set LIFE_CALENDAR_DIARY_TEMPLATE "${cfg.diaryTemplate}" \
                     --set LIFE_CALENDAR_DIARY_TEMPLATE_FALLBACK "${self.packages.${pkgs.system}.default}/share/life-calendar/template.md"
                 '';
@@ -125,10 +123,16 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          default = devenv.lib.mkShell {
-            inherit inputs pkgs;
-            modules = [
-              ./devenv.nix
+          default = pkgs.mkShell {
+            nativeBuildInputs = with pkgs; [
+              cmake
+              pkg-config
+              gnumake
+              ninja # We used ninja earlier, good to have
+              gcc   # or clang
+            ];
+            buildInputs = with pkgs; [ 
+              ftxui 
             ];
           };
         }

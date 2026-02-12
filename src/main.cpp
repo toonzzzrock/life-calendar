@@ -23,7 +23,16 @@ int main(int argc, char *argv[]) {
 
   for (int i = 1; i < argc; ++i) {
     std::string arg = argv[i];
-    if (arg == "--check-today") {
+    if (arg == "--help" || arg == "-h") {
+      std::cout << "Usage: life-calendar [config_path] [options]\n"
+                << "Options:\n"
+                << "  -h, --help                        Show this help message\n"
+                << "  --check-today                     Check if today's diary exists and exit\n"
+                << "  --check-yesterday                 Check if yesterday's diary exists and exit\n"
+                << "  --open-if-today-missing           Open TUI only if today's diary is missing\n"
+                << "  --open-if-yesterday-missing       Open TUI only if yesterday's diary is missing\n";
+      return 0;
+    } else if (arg == "--check-today") {
       check_today = true;
     } else if (arg == "--check-yesterday") {
       check_yesterday = true;
