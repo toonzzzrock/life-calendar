@@ -32,3 +32,6 @@ struct Config {
 
 // Get today's date components
 void get_today(int &y, int &m, int &d);
+
+// Get yesterday's date components
+void get_yesterday(int &y, int &m, int &d);

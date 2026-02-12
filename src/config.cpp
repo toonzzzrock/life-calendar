@@ -73,6 +73,15 @@ void get_today(int &y, int &m, int &d) {
   d = unsigned(ymd.day());
 }
 
+void get_yesterday(int &y, int &m, int &d) {
+  using namespace std::chrono;
+  auto yesterday = floor<days>(system_clock::now()) - days{1};
+  year_month_day ymd{yesterday};
+  y = int(ymd.year());
+  m = unsigned(ymd.month());
+  d = unsigned(ymd.day());
+}
+
 Config load_config(const std::string &explicit_path) {
   std::vector<std::string> search_paths;
 
