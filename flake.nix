@@ -45,7 +45,7 @@
 
             postInstall = ''
               mkdir -p $out/share/life-calendar
-              cp assets/template.md $out/share/life-calendar/template.md
+              cp $src/assets/template.md $out/share/life-calendar/template.md
 
               wrapProgram $out/bin/life-calendar \
                 --set-default LIFE_CALENDAR_BIRTH_DATE "2000-01-01" \
@@ -94,7 +94,7 @@
             };
             diaryTemplate = lib.mkOption {
               type = lib.types.str;
-              default = "";
+              default = "~/.life-calendar/template.md";
               description = "Path to a template file for new diary entries.";
             };
           };
@@ -110,8 +110,9 @@
                     --set LIFE_CALENDAR_BIRTH_DATE "${cfg.birthDate}" \
                     --set LIFE_CALENDAR_DEATH_DATE "${cfg.deathDate}" \
                     --set LIFE_CALENDAR_EDITOR "${cfg.editor}" \
-                    --set LIFE_CALENDAR_DIARY_DIR "${cfg.diaryDir}" \
-                    --set LIFE_CALENDAR_DIARY_TEMPLATE "${if cfg.diaryTemplate != "" then cfg.diaryTemplate else "${self.packages.${pkgs.system}.default}/share/life-calendar/template.md"}"
+                    --set LIFE_CALENDAR_DIARY_DIR "${cfg.diary_dir}" \
+                    --set LIFE_CALENDAR_DIARY_TEMPLATE "${cfg.diaryTemplate}" \
+                    --set LIFE_CALENDAR_DIARY_TEMPLATE_FALLBACK "${self.packages.${pkgs.system}.default}/share/life-calendar/template.md"
                 '';
               })
             ];

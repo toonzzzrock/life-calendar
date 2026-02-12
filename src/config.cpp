@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
@@ -118,12 +119,27 @@ Config load_config(const std::string &explicit_path) {
   cfg.death_date_str = get_env("LIFE_CALENDAR_DEATH_DATE", "2080-01-01");
   cfg.editor = get_env("LIFE_CALENDAR_EDITOR", get_env("EDITOR", "vi"));
   cfg.diary_dir = get_env("LIFE_CALENDAR_DIARY_DIR", "~/.life-calendar/diary");
-  cfg.diary_template = get_env("LIFE_CALENDAR_DIARY_TEMPLATE", "");
+  cfg.diary_template = get_env("LIFE_CALENDAR_DIARY_TEMPLATE", "~/.life-calendar/template.md");
 
-  // Expand ~ in diary_dir
+  // Expand ~ in paths
   cfg.diary_dir = expand_home(cfg.diary_dir);
-  if (!cfg.diary_template.empty()) {
-    cfg.diary_template = expand_home(cfg.diary_template);
+  cfg.diary_template = expand_home(cfg.diary_template);
+
+  // If the user's template doesn't exist, try to create it from the Nix store fallback or a default header
+  if (!fs::exists(cfg.diary_template)) {
+    try {
+      fs::create_directories(fs::path(cfg.diary_template).parent_path());
+      
+      std::string fallback_template = get_env("LIFE_CALENDAR_DIARY_TEMPLATE_FALLBACK", "");
+      if (!fallback_template.empty() && fs::exists(fallback_template)) {
+        fs::copy_file(fallback_template, cfg.diary_template);
+      } else {
+        std::ofstream ofs(cfg.diary_template);
+        ofs << "# Diary Entry: {date}\n\n## What happened today?\n- \n\n## Mood / Energy\n- \n\n## Reflection\n- \n";
+      }
+    } catch (...) {
+      // Ignore errors in template creation, we'll handle missing template in open_diary
+    }
   }
 
   // Parse dates
