@@ -2,6 +2,8 @@
 
 A terminal-based **Life Calendar** TUI that visualizes your entire life as a grid of monthly squares — from birth to expected death date. Select a month and open day-by-day diary entries in your preferred editor.
 
+![showcase image](assets/image.png)
+
 ## Features
 
 - 📅 **Visual life grid** — each square = one month of your life
@@ -37,20 +39,20 @@ Or pass a custom config path:
 Create `config.toml` in the project directory or `~/.config/life-calendar/config.toml`:
 
 ```toml
-birth_date = "1990-01-01"
-death_date = "2070-01-01"
-editor = "nvim"
+birth_date = "2000-01-01"
+death_date = "2080-01-01"
+editor = "vi"
 diary_dir = "~/.life-calendar/diary"
 diary_template = "~/.life-calendar/template.md"
 ```
 
-| Field            | Description                        | Default                  |
-| ---------------- | ---------------------------------- | ------------------------ |
-| `birth_date`     | Your birth date (YYYY-MM-DD)       | required                 |
-| `death_date`     | Expected end date (YYYY-MM-DD)     | required                 |
-| `editor`         | Editor command to open diary files | `vi`                     |
-| `diary_dir`      | Directory for diary `.md` files    | `~/.life-calendar/diary` |
-| `diary_template` | Optional template for new notes    | empty                    |
+| Field            | Description                        | Default                        |
+| ---------------- | ---------------------------------- | ------------------------------ |
+| `birth_date`     | Your birth date (YYYY-MM-DD)       | `2000-01-01`                   |
+| `death_date`     | Expected end date (YYYY-MM-DD)     | `2080-01-01`                   |
+| `editor`         | Editor command to open diary files | `vi`                           |
+| `diary_dir`      | Directory for diary `.md` files    | `~/.life-calendar/diary`       |
+| `diary_template` | Optional template for new notes    | `~/.life-calendar/template.md` |
 
 Template placeholders (used only when creating a new file):
 
@@ -111,9 +113,9 @@ To use the NixOS module and avoid system bloat by sharing `nixpkgs`, add this to
         {
           programs.life-calendar = {
             enable = true;
-            birthDate = "1990-01-01";
-            deathDate = "2070-01-01";
-            editor = "code"; # default is "code"
+            birthDate = "2000-01-01";
+            deathDate = "2080-01-01";
+            editor = "vi";
             diaryDir = "~/Documents/life";
             diaryTemplate = "~/Documents/life/template.md";
           };

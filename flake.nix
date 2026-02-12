@@ -47,7 +47,7 @@
 
               wrapProgram $out/bin/life-calendar \
                 --set-default LIFE_CALENDAR_BIRTH_DATE "2000-01-01" \
-                --set-default LIFE_CALENDAR_DEATH_DATE "2080-10-19" \
+                --set-default LIFE_CALENDAR_DEATH_DATE "2080-01-01" \
                 --set-default LIFE_CALENDAR_DIARY_DIR "~/.life-calendar/diary" \
                 --set-default LIFE_CALENDAR_DIARY_TEMPLATE "$out/share/life-calendar/template.md"
             '';
@@ -82,7 +82,7 @@
             };
             editor = lib.mkOption {
               type = lib.types.str;
-              default = "code";
+              default = "vi";
               description = "The editor to use for diary entries.";
             };
             diaryDir = lib.mkOption {
