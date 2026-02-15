@@ -16,6 +16,13 @@ result
 !config.toml
 !.agent/
 
+# Images
+!*.png
+!*.jpg
+!*.jpeg
+!*.gif
+!*.svg
+
 # Nix/Direnv
 .direnv/
 .devenv/
