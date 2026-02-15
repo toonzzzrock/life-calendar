@@ -66,7 +66,7 @@ int days_from_epoch(int y, int m, int d) {
 
 void get_today(int &y, int &m, int &d) {
   using namespace std::chrono;
-  auto today = floor<days>(system_clock::now());
+  auto today = floor<days>(current_zone()->to_local(system_clock::now()));
   year_month_day ymd{today};
   y = int(ymd.year());
   m = unsigned(ymd.month());
@@ -75,7 +75,8 @@ void get_today(int &y, int &m, int &d) {
 
 void get_yesterday(int &y, int &m, int &d) {
   using namespace std::chrono;
-  auto yesterday = floor<days>(system_clock::now()) - days{1};
+  auto yesterday =
+      floor<days>(current_zone()->to_local(system_clock::now())) - days{1};
   year_month_day ymd{yesterday};
   y = int(ymd.year());
   m = unsigned(ymd.month());
@@ -113,14 +114,14 @@ Config load_config(const std::string &explicit_path) {
   if (found_path.empty()) {
     // No config file found, we'll rely on environment variables and defaults.
   } else {
-    // If we wanted to keep TOML support, we could still parse it here, 
+    // If we wanted to keep TOML support, we could still parse it here,
     // but the user wants to move to NixOS options.
   }
 
   Config cfg;
-  
-  auto get_env = [](const char* name, const std::string& def) {
-    const char* val = std::getenv(name);
+
+  auto get_env = [](const char *name, const std::string &def) {
+    const char *val = std::getenv(name);
     return val ? std::string(val) : def;
   };
 
@@ -128,26 +129,31 @@ Config load_config(const std::string &explicit_path) {
   cfg.death_date_str = get_env("LIFE_CALENDAR_DEATH_DATE", "2080-01-01");
   cfg.editor = get_env("LIFE_CALENDAR_EDITOR", get_env("EDITOR", "vi"));
   cfg.diary_dir = get_env("LIFE_CALENDAR_DIARY_DIR", "~/.life-calendar/diary");
-  cfg.diary_template = get_env("LIFE_CALENDAR_DIARY_TEMPLATE", "~/.life-calendar/template.md");
+  cfg.diary_template =
+      get_env("LIFE_CALENDAR_DIARY_TEMPLATE", "~/.life-calendar/template.md");
 
   // Expand ~ in paths
   cfg.diary_dir = expand_home(cfg.diary_dir);
   cfg.diary_template = expand_home(cfg.diary_template);
 
-  // If the user's template doesn't exist, try to create it from the Nix store fallback or a default header
+  // If the user's template doesn't exist, try to create it from the Nix store
+  // fallback or a default header
   if (!fs::exists(cfg.diary_template)) {
     try {
       fs::create_directories(fs::path(cfg.diary_template).parent_path());
-      
-      std::string fallback_template = get_env("LIFE_CALENDAR_DIARY_TEMPLATE_FALLBACK", "");
+
+      std::string fallback_template =
+          get_env("LIFE_CALENDAR_DIARY_TEMPLATE_FALLBACK", "");
       if (!fallback_template.empty() && fs::exists(fallback_template)) {
         fs::copy_file(fallback_template, cfg.diary_template);
       } else {
         std::ofstream ofs(cfg.diary_template);
-        ofs << "# Diary Entry: {date}\n\n## What happened today?\n- \n\n## Mood / Energy\n- \n\n## Reflection\n- \n";
+        ofs << "# Diary Entry: {date}\n\n## What happened today?\n- \n\n## "
+               "Mood / Energy\n- \n\n## Reflection\n- \n";
       }
     } catch (...) {
-      // Ignore errors in template creation, we'll handle missing template in open_diary
+      // Ignore errors in template creation, we'll handle missing template in
+      // open_diary
     }
   }
 

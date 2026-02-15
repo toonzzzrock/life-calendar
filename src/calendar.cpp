@@ -624,10 +624,10 @@ private:
 
   Element RenderCountdown() {
     using namespace std::chrono;
-    auto now = system_clock::now();
-    auto target = sys_days{year{config_.death_year} /
-                           month{static_cast<unsigned>(config_.death_month)} /
-                           day{static_cast<unsigned>(config_.death_day)}} +
+    auto now = current_zone()->to_local(system_clock::now());
+    auto target = local_days{year{config_.death_year} /
+                             month{static_cast<unsigned>(config_.death_month)} /
+                             day{static_cast<unsigned>(config_.death_day)}} +
                   days{1};
 
     auto diff = target - now;
